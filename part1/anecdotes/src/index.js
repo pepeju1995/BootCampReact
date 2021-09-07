@@ -1,47 +1,59 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 
-const App = (props) => {
-  const lengthAnecdotes = props.anecdotes.length
+const Header = ({name}) => <h1>{name}</h1>
+
+const Anecdote = ({text, voteCount}) => <div>
+  <p>{text}</p>
+  <p>Ha tenido {voteCount} votos</p>
+</div>
+
+const Button = ({text, onClick}) => 
+  <button onClick={onClick}>
+    {text}
+  </button>
+
+const Winner = ({anecdotes, allVotes}) => {
+  const mostVoted = Math.max(...allVotes)
+  const winnerIndex = allVotes.indexOf(mostVoted)
+  const winner = anecdotes[winnerIndex]
+
+  if(mostVoted === 0){
+    return (
+      <h1>No votes Yet</h1>
+    )
+  }
+  return (
+    <div>
+      <h1>Winner</h1>
+      <p>{winner}</p>
+      <p>With {mostVoted} votes</p>
+    </div>
+  )
+}
+
+const App = ({anecdotes}) => {
   const [selected, setSelected] = useState(0)
-  const [points, setPoints] = useState(Array(lengthAnecdotes).fill(0))
-  const [bestAnec, setBestAnec] = useState(0)
+  const [points, setPoints] = useState(Array(anecdotes.length).fill(0))
 
-  const handleClick = () => {
-    const randomAnec = Math.floor(Math.random()*lengthAnecdotes)
-    return setSelected(randomAnec)
+  const handleAnecdoteClick = () => {
+    const randomAnec = Math.floor(Math.random()*anecdotes.length)
+    setSelected(randomAnec)
   }
 
-  const maxVoted = () => {
-    let maxPos = bestAnec
-    for(let i=0; i < lengthAnecdotes; i++) {
-      if(points[maxPos] < points[i]){
-        maxPos = i
-      }
-    }
-    
-    setBestAnec(maxPos)
-  }
-
-  const voteAnecdote = (selected) => {
-    const voted = () => {
-      const oldPoints = [...points]
-      oldPoints[selected] += 1
-      setPoints(oldPoints)
-      maxVoted()
-    }
-    console.log(bestAnec, points[bestAnec])
-    return voted
+  const handleVoteClick = () => {
+    const newAllVotes = [...points]
+    newAllVotes[selected] += 1
+    setPoints(newAllVotes)
   }
 
   return (
     <div>
-      <h1>Anecdote of the day</h1>
-      <p>{props.anecdotes[selected]}</p>
-      <button onClick={voteAnecdote(selected)}>vote</button>
-      <button onClick={handleClick}>Next Anecdote</button>
-      <h1>Anecdote with most votes</h1>
-      <p>{props.anecdotes[bestAnec]}</p>
+      <Header name="Anecdote of the day" />
+      <Anecdote text={anecdotes[selected]} voteCount={points[selected]} />
+      <Button text="Vote" onClick={handleVoteClick} />
+      <Button text="Next Anecdote" onClick={handleAnecdoteClick} />
+      <Winner anecdotes={anecdotes} allVotes={points} />
     </div>
   )
 }
