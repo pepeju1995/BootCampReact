@@ -1,20 +1,40 @@
 import './App.css';
 import { useState } from 'react';
-import {Persons} from './Person'
+import {Persons} from './Components/Person'
+import { Filter } from './Components/Filter';
+import { PersonForm } from './Components/PersonForm';
 
 function App() {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', telef:'659896532'}
+    { name: 'Arto Hellas', telef: '040123456' },
+    { name: 'Ada Lovelace', telef: '395323523' },
+    { name: 'Dan Abramov', telef: '122343454' },
+    { name: 'Mary Poppendieck', telef: '392312215' }
+  ])
+  const [allPersons, setAllPersons] = useState([
+    { name: 'Arto Hellas', telef: '040123456' },
+    { name: 'Ada Lovelace', telef: '395323523' },
+    { name: 'Dan Abramov', telef: '122343454' },
+    { name: 'Mary Poppendieck', telef: '392312215' }
   ])
   const [newName, setNewName] = useState('')
-  const [number, setNumber] = useState('000000000')
+  const [newNumber, setNewNumber] = useState('')
+  const [newSearch, setNewSearch] = useState('')
 
   const handleChangeName = (event) => {
     setNewName(event.target.value)
   }
 
   const handleChangeNumber = (event) => {
-    setNumber(event.target.value)
+    setNewNumber(event.target.value)
+  }
+
+  const handleChangeSearch = (event) => {
+    setNewSearch(event.target.value)
+    const regex = new RegExp(newSearch, 'i')
+    console.log(regex)
+    const filteredPersons = () => allPersons.filter(person => person.name.match(regex))
+    setPersons(filteredPersons)    
   }
 
   const handleSubmit = (event) => {
@@ -23,10 +43,13 @@ function App() {
     if(persons.find(name => name.name).name !== newName){
       const nameToAdd = {
         name: newName,
-        telef: number
+        telef: newNumber
       }
+      console.log(nameToAdd)
       setPersons(persons.concat(nameToAdd))
+      console.log(persons)
       setNewName('')
+      setNewNumber('')
     }
     else{
       alert(`${newName} esta ya incluido`)
@@ -37,15 +60,10 @@ function App() {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          name: <input onChange={handleChangeName} value={newName}/>
-        </div>
-        <div>number: <input onChange={handleChangeNumber} value={number}/></div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Filter value={newSearch} onChange={handleChangeSearch} />
+      <h2>Add New Person</h2>
+      <PersonForm handleSubmit={handleSubmit} handleChangeName={handleChangeName} 
+      handleChangeNumber={handleChangeNumber} newName={newName} newNumber={newNumber} />
       <h2>Numbers</h2>
       <Persons persons={persons} />
     </div>
