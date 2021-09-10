@@ -5,18 +5,13 @@ import { Filter } from './Components/Filter';
 import { PersonForm } from './Components/PersonForm';
 
 function App() {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', telef: '040123456' },
-    { name: 'Ada Lovelace', telef: '395323523' },
-    { name: 'Dan Abramov', telef: '122343454' },
-    { name: 'Mary Poppendieck', telef: '392312215' }
-  ])
   const [allPersons, setAllPersons] = useState([
     { name: 'Arto Hellas', telef: '040123456' },
     { name: 'Ada Lovelace', telef: '395323523' },
     { name: 'Dan Abramov', telef: '122343454' },
     { name: 'Mary Poppendieck', telef: '392312215' }
   ])
+  const [persons, setPersons] = useState(allPersons)
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
@@ -32,7 +27,6 @@ function App() {
   const handleChangeSearch = (event) => {
     setNewSearch(event.target.value)
     const regex = new RegExp(newSearch, 'i')
-    console.log(regex)
     const filteredPersons = () => allPersons.filter(person => person.name.match(regex))
     setPersons(filteredPersons)    
   }
@@ -41,13 +35,12 @@ function App() {
     event.preventDefault()
     
     if(persons.find(name => name.name).name !== newName){
-      const nameToAdd = {
+      const newList = allPersons.concat({
         name: newName,
         telef: newNumber
-      }
-      console.log(nameToAdd)
-      setPersons(persons.concat(nameToAdd))
-      console.log(persons)
+      })
+      setPersons(newList)
+      setAllPersons(newList)
       setNewName('')
       setNewNumber('')
     }
