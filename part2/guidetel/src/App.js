@@ -1,20 +1,25 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {Persons} from './Components/Person'
 import { Filter } from './Components/Filter';
 import { PersonForm } from './Components/PersonForm';
+import axios from 'axios';
 
 function App() {
-  const [allPersons, setAllPersons] = useState([
-    { name: 'Arto Hellas', telef: '040123456' },
-    { name: 'Ada Lovelace', telef: '395323523' },
-    { name: 'Dan Abramov', telef: '122343454' },
-    { name: 'Mary Poppendieck', telef: '392312215' }
-  ])
-  const [persons, setPersons] = useState(allPersons)
+  const [allPersons, setAllPersons] = useState([])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons")
+      .then((response) => {
+        console.log(response.data)
+        setAllPersons(response.data)
+        setPersons(response.data)
+      })
+  }, [])
 
   const handleChangeName = (event) => {
     setNewName(event.target.value)
@@ -37,7 +42,7 @@ function App() {
     if(persons.find(name => name.name).name !== newName){
       const newList = allPersons.concat({
         name: newName,
-        telef: newNumber
+        number: newNumber
       })
       setPersons(newList)
       setAllPersons(newList)
