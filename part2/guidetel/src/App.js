@@ -30,10 +30,11 @@ function App() {
   }
 
   const handleChangeSearch = (event) => {
-    setNewSearch(event.target.value)
-    const regex = new RegExp(newSearch, 'i')
+    const search = event.target.value
+    const regex = new RegExp(search, 'i')
     const filteredPersons = () => allPersons.filter(person => person.name.match(regex))
     setPersons(filteredPersons)    
+    setNewSearch(search)
   }
 
   const handleSubmit = (event) => {
