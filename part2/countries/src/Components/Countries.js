@@ -16,29 +16,24 @@ const Countrie = ({countrie}) => {
     )
 }
 
-export const Countries = ({countries, message}) => {
-    if(countries.length === 1){
+export const Countries = ({countries, setCountries}) => {
+    if(countries.length > 10){
+        return (
+            <p>Too many countries, specify another filter</p>
+        )
+    }else if(countries.length > 2 || countries.length === 0){
+        return (
+            <ul>
+                {countries.map((countrie, i) => 
+                    <li key={i}>{countrie.name} <button onClick={() => setCountries([countrie])}>Show</button></li>
+                )}
+            </ul>
+        )   
+    }else {
         return (
             <div>
                 <Countrie countrie={countries[0]} />
             </div>
         )
     }
-    if(message){
-        return (
-            <p>Too many countries, specify another filter</p>
-        )
-    }
-    return (
-        <ol>
-            {countries.map(countrie => {
-                return (
-                    <div key={countrie.name}>
-                        <li>{countrie.name}</li> 
-                        <button onClick={() => <Countrie countrie={countrie} />}>Show</button>
-                    </div>
-                )}   
-            )}
-        </ol>
-    )
 }
