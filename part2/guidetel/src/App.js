@@ -4,6 +4,9 @@ import {Persons} from './Components/Person'
 import { Filter } from './Components/Filter';
 import { PersonForm } from './Components/PersonForm';
 import axios from 'axios';
+import { getAllPersons } from './Services';
+
+const DATA = "http://localhost:3001/persons"
 
 function App() {
   const [allPersons, setAllPersons] = useState([])
@@ -13,11 +16,10 @@ function App() {
   const [newSearch, setNewSearch] = useState('')
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons")
+    getAllPersons(DATA)
       .then((response) => {
-        console.log(response.data)
-        setAllPersons(response.data)
-        setPersons(response.data)
+        setAllPersons(response)
+        setPersons(response)
       })
   }, [])
 
