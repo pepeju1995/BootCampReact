@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import {Persons} from './Components/Person'
 import { Filter } from './Components/Filter';
 import { PersonForm } from './Components/PersonForm';
-import axios from 'axios';
-import { getAllPersons } from './Services';
+import { getAllPersons, setPerson } from './Services';
 
 const DATA = "http://localhost:3001/persons"
 
@@ -19,7 +18,6 @@ function App() {
     getAllPersons(DATA)
       .then((response) => {
         setAllPersons(response)
-        setPersons(response)
       })
   }, [])
 
@@ -41,21 +39,23 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    
-    if(persons.find(name => name.name).name !== newName){
-      const newList = allPersons.concat({
+    const existe = allPersons.find(person => person.name === newName)
+    if(existe === 'undefined'){
+      const newPerson = {
         name: newName,
-        number: newNumber
-      })
-      setPersons(newList)
-      setAllPersons(newList)
-      setNewName('')
-      setNewNumber('')
+        number: newNumber,
+        id: allPersons.length + 1
+      }
+      setPerson(DATA, newPerson)
+        .then((newPerson) => {
+          setAllPersons(prevAllPerson => prevAllPerson.concat(newPerson))
+        })
     }
     else{
       alert(`${newName} esta ya incluido`)
-      setNewName('')
     }
+    setNewName('')
+    setNewNumber('')
   }
 
   return (
@@ -66,7 +66,8 @@ function App() {
       <PersonForm handleSubmit={handleSubmit} handleChangeName={handleChangeName} 
       handleChangeNumber={handleChangeNumber} newName={newName} newNumber={newNumber} />
       <h2>Numbers</h2>
-      <Persons persons={persons} />
+      {newSearch === '' ? <Persons persons={allPersons} /> 
+        : <Persons persons={persons} />}
     </div>
   );
 }
