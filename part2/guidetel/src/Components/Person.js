@@ -1,13 +1,8 @@
-import { deletePerson } from "../Services"
-
-const Person = ({person}) => {
+const Person = ({person, deletePerson}) => {
     return (
-        <li>{person.name} {person.number} 
-            <button onClick={() => {
-                if(window.confirm(`Desea eliminar ${person.name}?`)){
-                    deletePerson(person.id)
-                }
-            }}>
+        <li>
+            {person.name} {person.number} 
+            <button onClick={() => deletePerson(person.id)}>
                 Delete
             </button>
         </li>
@@ -15,10 +10,12 @@ const Person = ({person}) => {
 }
 
 
-export const Persons = ({persons}) => {
+export const Persons = ({persons, deletePerson}) => {
     return (
         <ol>
-            {persons.map((person) => <Person person={person} key={person.id} />)}
+            {persons.map((person, i) => 
+                <Person person={person} key={i} deletePerson={deletePerson} />
+            )}
         </ol>
     )
 }

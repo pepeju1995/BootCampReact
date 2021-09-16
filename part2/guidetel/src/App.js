@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import {Persons} from './Components/Person'
 import { Filter } from './Components/Filter';
 import { PersonForm } from './Components/PersonForm';
-import { getAllPersons, setPerson } from './Services';
+import personServices from './Services/index'
 
 const DATA = "http://localhost:3001/persons"
 
@@ -15,7 +15,8 @@ function App() {
   const [newSearch, setNewSearch] = useState('')
 
   useEffect(() => {
-    getAllPersons(DATA)
+    personServices
+      .getAllPersons(DATA)
       .then((response) => {
         setAllPersons(response)
       })
@@ -39,14 +40,17 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    const existe = allPersons.find(person => person.name === newName)
-    if(existe === 'undefined'){
-      const newPerson = {
+    const existe = allPersons.filter(person => person.name === newName)
+    console.log(existe)
+
+    if(existe.length === 0){
+      const personToAdd = {
         name: newName,
         number: newNumber,
         id: allPersons.length + 1
       }
-      setPerson(DATA, newPerson)
+      personServices
+        .setPerson(DATA, personToAdd)
         .then((newPerson) => {
           setAllPersons(prevAllPerson => prevAllPerson.concat(newPerson))
         })
@@ -58,6 +62,19 @@ function App() {
     setNewNumber('')
   }
 
+  const deletePerson = (id) => {
+    const filteredPerson = allPersons.filter(person => person.id === id)
+    const personName = filteredPerson[0].name
+    const personId = filteredPerson[0].id
+    
+    if(window.confirm(`Eliminar ${personName}`)){
+      personServices
+        .remove(id)
+      console.log(`${personName} se ha eliminado correctamente`)
+      setAllPersons(allPersons.filter(person => person.id !== personId))
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -66,8 +83,8 @@ function App() {
       <PersonForm handleSubmit={handleSubmit} handleChangeName={handleChangeName} 
       handleChangeNumber={handleChangeNumber} newName={newName} newNumber={newNumber} />
       <h2>Numbers</h2>
-      {newSearch === '' ? <Persons persons={allPersons} /> 
-        : <Persons persons={persons} />}
+      {newSearch === '' ? <Persons persons={allPersons} deletePerson={deletePerson} /> 
+        : <Persons persons={persons} deletePerson={deletePerson} />}
     </div>
   );
 }

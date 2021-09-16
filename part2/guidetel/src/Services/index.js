@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const getAllPersons = (url) => {
+const getAllPersons = (url) => {
     return axios.get(url)
       .then((response) => {
           const {data} = response
@@ -8,7 +8,7 @@ export const getAllPersons = (url) => {
       })
 }
 
-export const setPerson = (url, {name, number, id}) => {
+const setPerson = (url, {name, number, id}) => {
     return axios.post(url, {name, number, id})
         .then((response) => {
             const {data} = response
@@ -16,11 +16,13 @@ export const setPerson = (url, {name, number, id}) => {
         })
 }
 
-export const deletePerson = (id) => {
+const remove = (id) => {
     return axios.delete(`http://localhost:3001/persons/${id}`)
         .then(response => {
             const {data} = response
             return data
         })
 }
+
+export default { getAllPersons, setPerson, remove }
 
