@@ -5,8 +5,6 @@ import { Filter } from './Components/Filter';
 import { PersonForm } from './Components/PersonForm';
 import personServices from './Services/index'
 
-const DATA = "http://localhost:3001/persons"
-
 function App() {
   const [allPersons, setAllPersons] = useState([])
   const [persons, setPersons] = useState([])
@@ -16,7 +14,7 @@ function App() {
 
   useEffect(() => {
     personServices
-      .getAllPersons(DATA)
+      .getAllPersons()
       .then((response) => {
         setAllPersons(response)
       })
@@ -41,22 +39,29 @@ function App() {
   const handleSubmit = (event) => {
     event.preventDefault()
     const existe = allPersons.filter(person => person.name === newName)
-    console.log(existe)
 
-    if(existe.length === 0){
+    const personToAdd = existe[0]
+    const updatePerson = {...personToAdd, number: newNumber}
+    
+    if(existe.length !== 0){
+      if(window.confirm(`Desea actualizar el telefono de ${updatePerson.name}?`))
+      personServices
+        .update(personToAdd.id, updatePerson)
+        .then(personUpdate => {
+          console.log(`${personUpdate.name} se ha actualizado correctamente.`)
+          setAllPersons(allPersons.map(personItem => personItem.id !== personToAdd.id ? personItem : personUpdate))
+        })
+    } else {
       const personToAdd = {
         name: newName,
         number: newNumber,
         id: allPersons.length + 1
       }
       personServices
-        .setPerson(DATA, personToAdd)
+        .setPerson(personToAdd)
         .then((newPerson) => {
           setAllPersons(prevAllPerson => prevAllPerson.concat(newPerson))
         })
-    }
-    else{
-      alert(`${newName} esta ya incluido`)
     }
     setNewName('')
     setNewNumber('')
